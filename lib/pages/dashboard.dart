@@ -2,32 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   final String value;
   const Dashboard({Key? key, required this.value}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-      ),
-      home: MyHomePage(title: 'Dashboard'),
-    );
-  }
+  _DashboardState createState() => _DashboardState(); // retorna a instancia do objeto state abaixo
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _DashboardState extends State<Dashboard> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -58,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                "Bem vindo:", //+value,
+                "Bem vindo: "+widget.value, // acessando o valor do da variavel declarada acima
 
                 style: TextStyle(
                     fontSize: 15
@@ -90,6 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
 
 /*class Loading extends StatefulWidget {
   @override
