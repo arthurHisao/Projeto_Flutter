@@ -7,20 +7,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  //final controllerName = TextEditingController();
   String value = "";
 
   @override
   Widget build(BuildContext context) {
-
-    /*void _openSecond() {
-      Navigator.pushReplacementNamed(
-          context,
-          "/dashboard",
-          arguments: {"email": controllerName.value.text}
-      );
-    }*/
-
     return Scaffold(
       body: Container (
         color: Colors.white,

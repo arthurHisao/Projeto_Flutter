@@ -1,6 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
+import 'dart:convert';
+
+Future<Hour> fetchHour() async {
+  final response = await http.get(Uri.parse('http://worldtimeapi.org/api/timezone/America/Sao_Paulo'));
+
+  if(response.statusCode == 200) {
+    return Hour.fromJson(jsonDecode(response.body));
+  }else {
+    throw Exception('Failed to load album');
+  }
+}
+
+class Hour {
+  final String now;
+
+  Hour({
+    required this.now,
+  });
+
+  factory Hour.fromJson(Map<String, dynamic> json) {
+    return Hour(
+      now: json['utc_datetime'],
+    );
+  }
+}
 
 class Dashboard extends StatefulWidget {
   final String value;
@@ -12,6 +38,33 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _counter = 0;
+  late Future<Hour> futureHour;
+
+  /*getTime() async {
+    // make the request
+    var url = "http://worldtimeapi.org/api/timezone/America/Sao_Paulo";
+    var response = await http.get(Uri.parse(url));
+    Map data = jsonDecode(response.body);
+
+    // get properties from json
+    String datetime = data['utc_datetime'];
+    String offset = data['utc_offset'].substring(1,3);
+
+    // create DateTime object
+    DateTime now = DateTime.parse(datetime);
+    now = now.add(Duration(hours: int.parse(offset)));
+    print('valor de  now: $now');
+    setState(() {
+      time = offset;
+    });
+  }*/
+
+  //start first
+  @override
+  void initState() {
+    super.initState();
+    futureHour = fetchHour();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -21,96 +74,31 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Dashboard"),
+    return MaterialApp(
+      title: 'My App Dashboard',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.deepOrange,
       ),
-      body: Container (
-        color: Colors.white,
-        padding: EdgeInsets.only(
-          top:50,
-          left:40,
-          right:40,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Dashboard'),
         ),
-        child: ListView(
-          children: <Widget> [
-            SizedBox(
-              height: 30,
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                "Bem vindo: "+widget.value, // acessando o valor do da variavel declarada acima
-
-                style: TextStyle(
-                    fontSize: 15
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 80,
-            ),
-            Text(
-              'Qtd: ' +'$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Container(
-              height: 40,
-              child: FlatButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                child: Text(
-                  "Contador ++",
-                  textAlign: TextAlign.center,
-                ),
-                onPressed: _incrementCounter,
-              ),
-            ),
-          ],
+        body: Center(
+          child: FutureBuilder<Hour>(
+            future: futureHour,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data!.now);
+              } else {
+                return Text('${snapshot.error}');
+              }
+              // By default, show a loading spinner.
+              return const CircularProgressIndicator();
+            },
+          ),
         ),
       ),
     );
   }
 }
-
-
-
-/*class Loading extends StatefulWidget {
-  @override
-  _LoadingState createState() => _LoadingState();
-}
-
-class _LoadingState extends State<Loading> {
-
-  void getTime() async {
-    // make the request
-    Response response = await get(Uri.parse("http://worldtimeapi.org/api/timezone/America/Sao_Paulo"));
-    Map data = jsonDecode(response.body);
-    print(data);
-
-    // get properties from json
-    String datetime = data['datetime'];
-    String offset = data['utc_offset'].substring(1,3);
-    //print(datetime);
-    print(offset);
-
-    // create DateTime object
-    DateTime now = DateTime.parse(datetime);
-    now = now.add(Duration(hours: int.parse(offset)));
-    print(now);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getTime();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Text('loading screen'),
-    );
-  }
-}*/
